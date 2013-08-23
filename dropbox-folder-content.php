@@ -23,7 +23,44 @@ class Dropbox_Folder_Content {
 	}
 	
 	public function show_dropbox_folder( $content ) {
-		require_once 'lib/Dropbox/autoload.php';
+		global $post;
+		
+		// Check for a page type
+		if ( 'page' !== $post->post_type ) {
+			return $content;
+		}
+		
+		// Get the slug of the page
+		$permalink = get_permalink( $post );
+		$permalink = str_replace( home_url(), '', $permalink );
+		$permalink = rtrim( $permalink, '/' );
+
+		// Oauth bits
+		$token = get_option( 'dfc_plugin_token_key' );
+		$token_secret = get_option( 'dfc_plugin_token_secret' );
+		$consumer_key = get_option( 'dfc_plugin_consumer_key' );
+		$consumer_secret = get_option( 'dfc_plugin_consumer_secret' );
+		$state = intval( get_option( 'dfc_plugin_oauth_state', 1 ) );
+
+		// If we're connected, then get dropbox libs
+		if ( $state >= 4 ) {
+			$files = array();
+			set_include_path( get_include_path() . PATH_SEPARATOR . dirname( __FILE__ ) . '/HTTP_OAuth' );
+			require("Dropbox/autoload.php");
+			require("HTTP_OAuth/HTTP/OAuth.php");
+			$oauth = new Dropbox_OAuth_PEAR( get_option( 'dfc_plugin_consumer_key' ), get_option( 'dfc_plugin_consumer_secret' ) );	
+			$dropbox = new Dropbox_API( $oauth );
+			$oauth->setToken( array(
+				'token'        => $token,
+				'token_secret' => $token_secret
+			) );
+			try {
+				$files = $dropbox->getMetaData( $permalink );				
+			} catch ( Exception $e ) {
+			}
+			include( dirname( __FILE__ ) . '/template-listing.php' );
+		}
+
 		return $content;
 	}
 

@@ -32,7 +32,9 @@ class Dropbox_Folder_Content {
 			'dfc_plugin_consumer_key',
 			'dfc_plugin_consumer_secret',
 			'dfc_plugin_token_key',
-			'dfc_plugin_token_secret'			
+			'dfc_plugin_token_secret',
+			'dfc_plugin_oauth_state',
+			'dfc_plugin_oauth_access_tokens',
 		);
 		foreach ( $opts as $opt ) {
 			$_opt = get_option( $opt );
@@ -48,7 +50,9 @@ class Dropbox_Folder_Content {
 				'dfc_plugin_consumer_key',
 				'dfc_plugin_consumer_secret',
 				'dfc_plugin_token_key',
-				'dfc_plugin_token_secret'			
+				'dfc_plugin_token_secret',
+				'dfc_plugin_oauth_state',
+				'dfc_plugin_oauth_access_tokens',
 			);
 			foreach ( $opts as $opt ) {
 				delete_option( $opt );
@@ -88,6 +92,22 @@ class Dropbox_Folder_Content {
 		if ( !current_user_can( 'manage_options' ) )  {
 			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 		}
+		
+		// Unlink dropbox?
+		if ( isset( $_REQUEST['reset_dropbox'] ) && 1 === intval( $_REQUEST['reset_dropbox'] ) ) {
+			if ( !check_admin_referer( 'reset_dropbox' ) ) {
+				wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+			}
+			$opts = array(
+				'dfc_plugin_token_key',
+				'dfc_plugin_token_secret',
+				'dfc_plugin_oauth_access_tokens',
+			);
+			foreach ( $opts as $opt ) {
+				delete_option( $opt );
+			}
+			update_option( 'dfc_plugin_oauth_state', 1 );
+		}
 
 		// Get the dropbox libraries
 		set_include_path( get_include_path() . PATH_SEPARATOR . dirname( __FILE__ ) . '/HTTP_OAuth' );
@@ -99,6 +119,10 @@ class Dropbox_Folder_Content {
 		$token_secret = get_option( 'dfc_plugin_token_secret' );
 		$consumer_key = get_option( 'dfc_plugin_consumer_key' );
 		$consumer_secret = get_option( 'dfc_plugin_consumer_secret' );
+		$state = intval( get_option( 'dfc_plugin_oauth_state', 1 ) );
+		if ( empty( $state ) ) {
+			$state = 1;
+		}
 
 		?>
 		<div class="wrap">
@@ -131,18 +155,29 @@ class Dropbox_Folder_Content {
 				<?php
 				$oauth = new Dropbox_OAuth_PEAR( get_option( 'dfc_plugin_consumer_key' ), get_option( 'dfc_plugin_consumer_secret' ) );	
 				$dropbox = new Dropbox_API( $oauth );
-				$tokens = $oauth->getRequestToken();
+				if ( 2 === $state ) {
+					$oauth->setToken( get_option( 'dfc_plugin_oauth_access_tokens' ) );
+					$tokens = $oauth->getAccessToken();
+					update_option( 'dfc_plugin_oauth_state', 3 );
+					$oauth->setToken( $tokens );
+				} elseif ( 1 === $state ) {
+					$tokens = $oauth->getRequestToken();
+					$url = $oauth->getAuthorizeUrl();
+					update_option( 'dfc_plugin_oauth_access_tokens', $tokens );
+					update_option( 'dfc_plugin_oauth_state', 2 );
+					$oauth->setToken( $tokens );
+				}
 				$revoked = false;
-				$url = $oauth->getAuthorizeUrl();
 				?>
 
 				<?php // Check for non-saved connection or invalid token received from oauth ?>
 				<?php
-				if ( !empty( $tokens ) && is_array( $tokens ) && isset( $tokens['token']) && isset( $tokens['token_secret']) ) {
+				if ( 3 === get_option( 'dfc_plugin_oauth_state' ) && !empty( $tokens ) && is_array( $tokens ) && isset( $tokens['token']) && isset( $tokens['token_secret']) ) {
 					update_option( 'dfc_plugin_token_key', $tokens['token'] );
 					update_option( 'dfc_plugin_token_secret', $tokens['token_secret'] );
 					$token = get_option( 'dfc_plugin_token_key' );
 					$token_secret = get_option( 'dfc_plugin_token_secret' );
+					update_option( 'dfc_plugin_oauth_state', 4 );					
 				}
 				?>
 
@@ -155,9 +190,7 @@ class Dropbox_Folder_Content {
 					) );
 					try {
 						$info = $dropbox->getAccountInfo();
-						echo '<xmp>'; print_r( $info ); echo '</xmp>';
 					} catch( Exception $e ) {
-						echo '<xmp>'; print_r( $e ); echo '</xmp>';
 						update_option( 'dfc_plugin_token_key', '' );
 						update_option( 'dfc_plugin_token_secret', '' );
 						$revoked = true;
@@ -168,8 +201,9 @@ class Dropbox_Folder_Content {
 				<?php // Controls ?>
 				<?php if ( empty( $info ) ) : ?>
 					<p><a class="button-secondary" href="<?php echo esc_attr( esc_url( $url ) ); ?>" target="_blank"><?php _e( 'Link to Dropbox account', 'dfc_plugin' ); ?></a></p>
+					<p><?php _e( 'This opens the Dropbox authorization page in a new window.  When you have authorized the app for your account, return to this page and refresh it.', 'dfc_plugin' ); ?></p>
 				<?php else : ?>
-					<p><a class="button-secondary" href="#"><?php printf( __( 'Unlink from Dropbox account: %s', 'dfc_plugin' ), $info['email'] ); ?></a></p>
+					<p><a class="button-secondary" href="<?php echo esc_attr( wp_nonce_url( add_query_arg( 'reset_dropbox', 1 ), 'reset_dropbox' ) ); ?>"><?php printf( __( 'Unlink from Dropbox account: %s', 'dfc_plugin' ), $info['email'] ); ?></a></p>
 				<?php endif; ?>
 			<?php else: ?>
 				<p><?php _e( 'Please fill in the appliction key and and secret key fields.', 'dfc_plugin' ); ?>

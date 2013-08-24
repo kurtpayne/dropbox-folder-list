@@ -7,6 +7,7 @@ Description: Show the contents of dropbox folder in the_content filter
 Author: Kurt Payne
 Version: 1.0
 Author URI: http://kpayne.me/
+License: GPLv2
 */
 
 $dfl_plugin = new Dropbox_Folder_List();

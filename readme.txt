@@ -10,7 +10,7 @@ Show your Dropbox files on your WordPress pages
 
 == Description ==
 
-Show your Dropbox files on your WordPress pages by hooking the_content and matching your current page\'s permalink against your dropbox folders. ÊThis plugin will generate a browseable list of folders/files and will proxy files that can be downloaded to your user\'s browser for you.Ê
+Show your Dropbox files on your WordPress pages by hooking the_content and matching your current page's permalink against your dropbox folders. ÊThis plugin will generate a browseable list of folders/files and will proxy files that can be downloaded to your user's browser for you.Ê
 
 == Installation ==
 

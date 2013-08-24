@@ -1,0 +1,71 @@
+# Copyright (C) 2013 Dropbox Folder List
+# This file is distributed under the same license as the Dropbox Folder List package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Dropbox Folder List 1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/kurtpayne/dropbox-folder-list\n"
+"POT-Creation-Date: 2013-08-24 07:25:06+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2013-MO-DA HO:MI+ZONE\n"
+
+#: dropbox-folder-list.php:167
+msgid "Settings"
+msgstr ""
+
+#: dropbox-folder-list.php:170
+msgid "Dropbox application key"
+msgstr ""
+
+#: dropbox-folder-list.php:178
+msgid "Dropbox secret key"
+msgstr ""
+
+#. #-#-#-#-#  dropbox-folder-list.pot (Dropbox Folder List 1.0)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: dropbox-folder-list.php:187 dropbox-folder-list.php:234
+msgid "Dropbox Folder List"
+msgstr ""
+
+#: dropbox-folder-list.php:194 dropbox-folder-list.php:200
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: dropbox-folder-list.php:325
+msgid "Link to Dropbox account"
+msgstr ""
+
+#: dropbox-folder-list.php:326
+msgid ""
+"This opens the Dropbox authorization page in a new window.  When you have "
+"authorized the app for your account, return to this page and <a href=\"%s"
+"\">refresh</a> it."
+msgstr ""
+
+#: dropbox-folder-list.php:328
+msgid "Unlink from Dropbox account: %s"
+msgstr ""
+
+#: dropbox-folder-list.php:331
+msgid "Please fill in the appliction key and and secret key fields."
+msgstr ""
+
+#: template-listing.php:2
+msgid "No files in this folder"
+msgstr ""
+
+#. #-#-#-#-#  dropbox-folder-list.pot (Dropbox Folder List 1.0)  #-#-#-#-#
+#. Plugin URI of the plugin/theme
+#. #-#-#-#-#  dropbox-folder-list.pot (Dropbox Folder List 1.0)  #-#-#-#-#
+#. Author URI of the plugin/theme
+msgid "http://kpayne.me/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Show the contents of dropbox folder in the_content filter"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Kurt Payne"
+msgstr ""

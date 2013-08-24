@@ -58,8 +58,10 @@ class Dropbox_Folder_List {
 		
 		// Get the folder listing
 		try {
-			$file = $dropbox->getFile( '/' . $wp_query->query_vars['dropbox'] );
-			echo '<xmp>'; print_r( $file ); echo '</xmp>'; die();
+			$file = $dropbox->getFile( '/' . rtrim( $wp_query->query_vars['dropbox'], '/' ) );
+			header( 'Content-type: application/octet-stream');
+			header( 'Content-disposition: attachment; filename="' . basename( rtrim( $wp_query->query_vars['dropbox'], '/' ) ) . '"');
+			echo $file;
 		} catch ( Exception $e ) {
 		}
 	}

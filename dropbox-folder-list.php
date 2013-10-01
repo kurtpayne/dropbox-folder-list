@@ -40,9 +40,9 @@ class Dropbox_Folder_List {
 		// Get the dropbox libraries
 		$files = array();
 		set_include_path( get_include_path() . PATH_SEPARATOR . dirname( __FILE__ ) . '/HTTP_OAuth' );
-		require("Dropbox/autoload.php");
-		require("HTTP_OAuth/HTTP/OAuth.php");
-
+		require dirname(__FILE__) . '/Dropbox/autoload.php';
+		require dirname(__FILE__) . '/HTTP_OAuth/HTTP/OAuth.php';
+		
 		// Oauth bits
 		$token = get_option( 'dfl_plugin_token_key' );
 		$token_secret = get_option( 'dfl_plugin_token_secret' );
@@ -100,8 +100,8 @@ class Dropbox_Folder_List {
 		// Get the dropbox libraries
 		$files = array();
 		set_include_path( get_include_path() . PATH_SEPARATOR . dirname( __FILE__ ) . '/HTTP_OAuth' );
-		require("Dropbox/autoload.php");
-		require("HTTP_OAuth/HTTP/OAuth.php");
+		require dirname(__FILE__) . '/Dropbox/autoload.php';
+		require dirname(__FILE__) . '/HTTP_OAuth/HTTP/OAuth.php';
 
 		// Oauth bits
 		$token = get_option( 'dfl_plugin_token_key' );
